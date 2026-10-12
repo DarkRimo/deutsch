@@ -118,8 +118,6 @@
 const tg = window.Telegram && window.Telegram.WebApp;
 if (tg) { tg.ready(); tg.expand(); }
 
-const ROUNDS = 10;
-
 const WORDS = {
   A2: [
     ["beginnen", "начинать"],
@@ -170,6 +168,9 @@ const WORDS = {
 const params = new URLSearchParams(location.search);
 const level = WORDS[params.get("level")] ? params.get("level") : "A2";
 const pool = WORDS[level];
+// сколько слов повторять: ?count=N (по умолчанию 10, максимум = все слова уровня)
+const requested = parseInt(params.get("count"), 10);
+const ROUNDS = Math.max(1, Math.min(isNaN(requested) ? 10 : requested, pool.length));
 
 const app = document.getElementById("app");
 let queue, round, score, locked;
