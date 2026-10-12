@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Немецкие слова</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+  :root {
+    --ink: #111;
+    --paper: #ececf2;
+    --line: #c8c8d2;
+    --hole: #d9a566;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    font-family: "Comic Neue", "Comic Sans MS", "Chalkboard SE", "Segoe Print", cursive, sans-serif;
+    color: var(--ink);
+    /* деревянный фон */
+    background-color: #c98f50;
+    background-image:
+      repeating-linear-gradient(90deg, rgba(120,70,20,.10) 0 2px, transparent 2px 7px),
+      repeating-linear-gradient(0deg, rgba(255,230,180,.10) 0 1px, transparent 1px 9px),
+      linear-gradient(180deg, #d19a5c 0%, #c58a4b 50%, #d19a5c 100%);
+    display: flex;
+    justify-content: center;
+    padding: env(safe-area-inset-top, 0) 0 env(safe-area-inset-bottom, 0);
+  }
+  #app {
+    width: 100%;
+    max-width: 520px;
+    padding: 18px 16px 24px;
+    display: flex;
+    flex-direction: column;
+  }
+  .progress {
+    text-align: center;
+    font-size: 15px;
+    opacity: .6;
+    margin-bottom: 4px;
+  }
+  .word {
+    text-align: center;
+    font-size: clamp(38px, 12vw, 62px);
+    font-weight: 700;
+    margin: 6px 0 22px;
+    word-break: break-word;
+    line-height: 1.1;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .card {
+    position: relative;
+    border: 0;
+    padding: 0;
+    aspect-ratio: 1 / .85;
+    background-color: var(--paper);
+    background-image:
+      /* дырочки сверху */
+      radial-gradient(circle at 50% 50%, var(--hole) 0 4px, transparent 4.5px),
+      /* линейки тетрадного листа */
+      repeating-linear-gradient(180deg, transparent 0 33px, var(--line) 33px 35px);
+    background-size: 14px 14px, 100% 100%;
+    background-repeat: repeat-x, no-repeat;
+    background-position: 0 4px, 0 22px;
+    border-radius: 3px 3px 6px 6px;
+    box-shadow: 0 6px 10px rgba(60,30,0,.35);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 28px 8px 8px;
+    font: inherit;
+    font-size: clamp(20px, 6vw, 30px);
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform .12s ease, box-shadow .12s ease, outline-color .12s;
+    outline: 4px solid transparent;
+    outline-offset: -2px;
+    word-break: break-word;
+    line-height: 1.15;
+  }
+  .card:active { transform: scale(.97); }
+  .c0 { color: #55785a; }
+  .c1 { color: #d33f45; }
+  .c2 { color: #e0702a; }
+  .c3 { color: #5e78ad; }
+  .card.correct { outline-color: #2fb344; background-color: #dff5e3; }
+  .card.wrong   { outline-color: #e03131; background-color: #fbe0e0; animation: shake .35s; }
+  .card:disabled { cursor: default; }
+  @keyframes shake {
+    0%,100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+
+  /* финальный экран */
+  .result { text-align: center; margin-top: 40px; }
+  .result .big { font-size: 64px; font-weight: 700; margin: 10px 0; }
+  .btn {
+    display: block; width: 100%; margin: 12px 0 0;
+    padding: 16px; border: 0; border-radius: 12px;
+    font: inherit; font-size: 20px; font-weight: 700;
+    background: var(--paper); color: var(--ink);
+    box-shadow: 0 5px 8px rgba(60,30,0,.35);
+    cursor: pointer;
+  }
+  .btn:active { transform: scale(.98); }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+
+const WORDS = {
+  A2: [
+    ["beginnen", "начинать"],
+    ["anrufen", "звонить"],
+    ["der Sport", "спорт"],
+    ["brauchen", "нуждаться"],
+    ["besuchen", "посещать"],
+    ["einladen", "приглашать"],
+    ["vergessen", "забывать"],
+    ["erklären", "объяснять"],
+    ["erzählen", "рассказывать"],
+    ["vorbereiten", "готовить"],
+    ["die Reise", "путешествие"],
+    ["das Geschenk", "подарок"],
+    ["die Erfahrung", "опыт"],
+    ["die Gesundheit", "здоровье"],
+    ["der Unterschied", "разница"],
+    ["die Meinung", "мнение"],
+    ["das Ergebnis", "результат"],
+    ["der Termin", "встреча"],
+    ["die Wohnung", "квартира"],
+    ["die Heizung", "отопление"],
+    ["der Nachbar", "сосед"],
+    ["der Verkehr", "движение"],
+    ["die Haltestelle", "остановка"],
+    ["der Flughafen", "аэропорт"],
+    ["das Gepäck", "багаж"],
+    ["verpassen", "пропустить"],
+    ["abholen", "забирать"],
+    ["umziehen", "переезжать"],
+    ["bestellen", "заказывать"],
+    ["bezahlen", "оплачивать"],
+    ["sich freuen", "радоваться"],
+    ["sich ärgern", "злиться"],
+    ["sich erinnern", "вспоминать"],
+    ["wichtig", "важный"],
+    ["schwierig", "сложный"],
+    ["gefährlich", "опасный"],
+    ["kostenlos", "бесплатный"],
+    ["pünktlich", "вовремя"],
+    ["manchmal", "иногда"],
+    ["plötzlich", "внезапно"],
+    ["trotzdem", "всё равно"],
+    ["außerdem", "кроме того"]
+  ]
+};
+
+const params = new URLSearchParams(location.search);
+const level = WORDS[params.get("level")] ? params.get("level") : "A2";
+const pool = WORDS[level];
+// сколько слов повторять: ?count=N (по умолчанию 10, максимум = все слова уровня)
+const requested = parseInt(params.get("count"), 10);
+const ROUNDS = Math.max(1, Math.min(isNaN(requested) ? 10 : requested, pool.length));
+
+const app = document.getElementById("app");
+let queue, round, score, locked;
+
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const haptic = (type) => { try { tg.HapticFeedback.notificationOccurred(type); } catch (e) {} };
+
+function start() {
+  queue = shuffle(pool).slice(0, ROUNDS);
+  round = 0; score = 0;
+  next();
+}
+
+function next() {
+  if (round >= queue.length) return finish();
+  locked = false;
+  const [de, ru] = queue[round];
+  const wrong = shuffle(pool.filter(w => w[0] !== de)).slice(0, 3).map(w => w[1]);
+  const options = shuffle([ru, ...wrong]);
+
+  app.innerHTML = `
+    <div class="progress">${level} · ${round + 1} / ${queue.length}</div>
+    <div class="word"></div>
+    <div class="grid"></div>`;
+  app.querySelector(".word").textContent = de;
+  const grid = app.querySelector(".grid");
+
+  options.forEach((opt, i) => {
+    const b = document.createElement("button");
+    b.className = "card c" + i;
+    b.textContent = opt;
+    b.onclick = () => pick(b, opt === ru, grid, ru);
+    grid.appendChild(b);
+  });
+}
+
+function pick(btn, ok, grid, ru) {
+  if (locked) return;
+  locked = true;
+  if (ok) { score++; btn.classList.add("correct"); haptic("success"); }
+  else {
+    btn.classList.add("wrong"); haptic("error");
+    [...grid.children].forEach(c => { if (c.textContent === ru) c.classList.add("correct"); });
+  }
+  [...grid.children].forEach(c => c.disabled = true);
+  setTimeout(() => { round++; next(); }, ok ? 650 : 1300);
+}
+
+function finish() {
+  app.innerHTML = `
+    <div class="result">
+      <div class="word">Готово!</div>
+      <div class="big">${score} / ${queue.length}</div>
+      <button class="btn" id="again">🔁 Ещё раз</button>
+      <button class="btn" id="close">Закрыть</button>
+    </div>`;
+  document.getElementById("again").onclick = start;
+  document.getElementById("close").onclick = () => tg ? tg.close() : location.reload();
+}
+
+start();
+</script>
+</body>
+</html>
