@@ -187,13 +187,16 @@ const clear = () => { app.innerHTML = ""; };
 const closeApp = () => { if (tg) tg.close(); else location.reload(); };
 
 // <PARSE>
+// Приводит название уровня к латинице: русские А, В, Б становятся A, B (чтобы опечатка не ломала уровень)
+const normLevel = s => String(s || "").trim().toUpperCase().replace(/\u0410/g, "A").replace(/[\u0412\u0411]/g, "B");
+
 function parseWords(text) {
   const out = {}; let cur = null;
   for (const raw of text.split(/\r?\n/)) {
     const line = raw.trim();
     if (!line || line.startsWith("#")) continue;
     const lv = line.match(/^\[(.+)\]$/);
-    if (lv) { cur = lv[1].trim().toUpperCase(); out[cur] = out[cur] || []; continue; }
+    if (lv) { cur = normLevel(lv[1]); out[cur] = out[cur] || []; continue; }
     const i = line.indexOf("=");
     if (i > 0 && cur) out[cur].push([line.slice(0, i).trim(), line.slice(i + 1).trim()]);
   }
@@ -206,7 +209,7 @@ function parseRules(text) {
     const line = raw.trim();
     if (!line || line.startsWith("#")) continue;
     const lv = line.match(/^\[(.+)\]$/);
-    if (lv) { cur = lv[1].trim().toUpperCase(); out[cur] = out[cur] || []; rule = null; continue; }
+    if (lv) { cur = normLevel(lv[1]); out[cur] = out[cur] || []; rule = null; continue; }
     if (!cur) continue;
     if (line.toLowerCase().startsWith("@rule")) {
       rule = { title: line.slice(5).trim(), text: [], example: [], words: "", qs: [] };
@@ -258,7 +261,7 @@ let pool, queue, round, score, locked, wordsCount;
 function startWords(lvl, count) {
   curLevel = lvl;
   pool = WORDS[lvl];
-  if (!pool || pool.length < 4) { showError("Для уровня " + lvl + " пока недостаточно слов (нужно минимум 4 в words.txt)."); return; }
+  if (!pool || pool.length < 4) { showError("Для уровня " + lvl + " недостаточно слов в words.txt (нужно минимум 4). Найденные уровни: " + (Object.keys(WORDS).join(", ") || "нет") + ". [v3]"); return; }
   const req = parseInt(count, 10);
   wordsCount = Math.max(1, Math.min(isNaN(req) ? 10 : req, pool.length));
   queue = shuffle(pool).slice(0, wordsCount);
@@ -310,7 +313,7 @@ let ri = 0;
 
 function startRules(lvl) {
   curLevel = lvl;
-  if (!RULES[lvl] || !RULES[lvl].length) { showError("Для уровня " + lvl + " пока нет правил (rules.txt)."); return; }
+  if (!RULES[lvl] || !RULES[lvl].length) { showError("Для уровня " + lvl + " нет правил в rules.txt. Найденные уровни: " + (Object.keys(RULES).join(", ") || "нет") + ". [v3]"); return; }
   showRule(0, false);
 }
 
@@ -553,7 +556,7 @@ function renderMenu() {
 /* =====================  СТАРТ  ===================== */
 (async function () {
   const mode = params.get("mode") || (params.get("level") ? "words" : "menu");
-  const level = (params.get("level") || "").toUpperCase();
+  const level = normLevel(params.get("level"));
   try {
     if (mode === "rules") {
       RULES = parseRules(await loadText("rules.txt"));
