@@ -1,0 +1,156 @@
+# Файл с правилами и тестами.
+#
+# [A1]            - уровень
+# @rule Название  - новое правило (это лицевая сторона карточки)
+# text: ...       - объяснение (оборот карточки), можно несколько строк text:
+# example: ...    - пример (оборот карточки), можно несколько строк example:
+# words: a, b, c  - слова-подсказка, показываются сверху в заданиях "впиши сам"
+#
+# Тестовые задания (пропуск обозначается ___ ):
+# choice: предложение | ПРАВИЛЬНЫЙ | неверный1 | неверный2   (выбор из 2-3 карточек, порядок на сайте перемешивается)
+# type: предложение | ответ                                    (вписать самому; запасные ответы через /)
+# bank: предл1 | ответ1 ;; предл2 | ответ2 ;; предл3 | ответ3  (перенести слова из банка в пропуски)
+#
+# Символ | внутри предложений использовать нельзя.
+
+[A1]
+
+@rule Глагол sein (быть)
+text: ich bin · du bist · er/sie/es ist
+text: wir sind · ihr seid · sie/Sie sind
+example: Ich bin Student. — Я студент.
+example: Wir sind müde. — Мы устали.
+words: bin, bist, ist, sind, seid
+choice: Ich ___ müde. | bin | bist | ist
+choice: Du ___ nett. | bist | bin | ist
+choice: Maria ___ Lehrerin. | ist | sind | bin
+choice: Wir ___ in Berlin. | sind | seid | ist
+type: Ihr ___ zu spät. | seid
+type: Ich ___ 20 Jahre alt. | bin
+bank: Ich ___ müde. | bin ;; Du ___ nett. | bist ;; Anna ___ hier. | ist ;; Wir ___ Freunde. | sind
+
+@rule Артикли der, die, das
+text: der — мужской род, die — женский род, das — средний род.
+text: Во множественном числе всегда die.
+example: der Mann, die Frau, das Kind, die Kinder
+example: Der Vater kocht. — Отец готовит.
+words: der, die, das
+choice: ___ Frau ist hier. | Die | Der | Das
+choice: ___ Kind spielt. | Das | Der | Die
+choice: ___ Mann arbeitet. | Der | Die | Das
+type: ___ Haus ist groß. | Das
+type: ___ Milch ist kalt. | Die
+bank: ___ Vater kocht. | Der ;; ___ Milch ist kalt. | Die ;; ___ Brot ist frisch. | Das
+
+@rule Правильные глаголы в Präsens
+text: Основа глагола + окончание:
+text: ich -e · du -st · er/sie/es -t
+text: wir -en · ihr -t · sie/Sie -en
+example: lernen: ich lerne, du lernst, er lernt, wir lernen
+example: Er wohnt in Berlin. — Он живёт в Берлине.
+words: spielen, wohnen, arbeiten, trinken, lernen
+choice: Ich ___ Deutsch. (lernen) | lerne | lernst | lernt
+choice: Er ___ jeden Tag. (lernen) | lernt | lerne | lernen
+choice: Wir ___ Deutsch. (lernen) | lernen | lernt | lerne
+type: Du ___ gut Fußball. (spielen) | spielst
+type: Ich ___ in München. (wohnen) | wohne
+type: Er ___ im Büro. (arbeiten) | arbeitet
+bank: Ich ___ Fußball. (spielen) | spiele ;; Du ___ in Berlin. (wohnen) | wohnst ;; Er ___ viel. (arbeiten) | arbeitet ;; Wir ___ Kaffee. (trinken) | trinken
+
+@rule Вопросительные слова (W-Fragen)
+text: В вопросе с вопросительным словом оно стоит на 1-м месте, а глагол на 2-м.
+text: wer — кто · was — что · wo — где · woher — откуда · wie — как
+example: Wo wohnst du? — Где ты живёшь?
+example: Woher kommst du? — Откуда ты?
+words: wer, was, wo, woher, wie
+choice: ___ wohnst du? | Wo | Wer | Was
+choice: ___ heißt du? | Wie | Wo | Woher
+choice: ___ kommst du? (из какой страны) | Woher | Wohin | Wo
+type: ___ ist das? (что) | Was
+type: ___ ist der Mann? (кто) | Wer
+bank: ___ wohnst du? | Wo ;; ___ kommst du? | Woher ;; ___ machst du? | Was ;; ___ heißt du? | Wie
+
+[A2]
+
+@rule Perfekt (прошедшее время)
+text: haben или sein (в нужной форме) + Partizip II в конце предложения.
+text: Правильные глаголы: ge- + основа + -t (gemacht). Неправильные: ge- ... -en (gesehen).
+text: С глаголами движения (gehen, fahren) используется sein.
+example: Ich habe Deutsch gelernt. — Я учил немецкий.
+example: Er ist nach Berlin gefahren. — Он поехал в Берлин.
+words: gelernt, gesehen, gegangen, gefahren, getrunken, gegessen
+choice: Ich habe gestern Fußball ___. | gespielt | spielt | spielen
+choice: Wir sind nach Hause ___. | gegangen | gegeht | gehen
+choice: Er hat einen Film ___. | gesehen | gesehnt | sehen
+type: Sie hat Kaffee ___. (trinken) | getrunken
+type: Ich bin nach München ___. (fahren) | gefahren
+bank: Ich habe Pizza ___. (essen) | gegessen ;; Wir haben Deutsch ___. (lernen) | gelernt ;; Er ist nach Hause ___. (gehen) | gegangen
+
+@rule Модальные глаголы
+text: können (мочь), müssen (быть должным), wollen (хотеть).
+text: Модальный глагол стоит на 2-м месте, а смысловой глагол в инфинитиве уходит в конец.
+text: ich kann/muss/will · du kannst/musst/willst · er kann/muss/will
+example: Ich muss heute arbeiten. — Мне сегодня нужно работать.
+example: Kannst du mir helfen? — Ты можешь мне помочь?
+words: kann, kannst, muss, musst, will, willst
+choice: Ich ___ heute lange arbeiten. | muss | musst | müssen
+choice: Du ___ gut Deutsch sprechen. | kannst | kann | könnt
+choice: Er ___ nach Hause gehen. | will | willst | wollen
+type: ___ du mir helfen? (können) | Kannst
+type: Ich ___ morgen früh aufstehen. (müssen) | muss
+bank: Ich ___ Deutsch lernen. | muss ;; Du ___ Klavier spielen. | kannst ;; Er ___ Pizza essen. | will
+
+@rule Dativ после предлогов
+text: После предлогов mit, bei, von, zu, nach, aus используется Dativ.
+text: der → dem · die → der · das → dem · die (мн.ч.) → den (+n к существительному)
+example: Ich fahre mit dem Bus. — Я еду на автобусе.
+example: Sie wohnt bei der Mutter. — Она живёт у матери.
+words: dem, der, den
+choice: Ich fahre mit ___ Bus. | dem | den | der
+choice: Er wohnt bei ___ Eltern. | den | dem | der
+choice: Wir gehen zu ___ Ärztin. | der | dem | die
+type: Ich komme aus ___ Schule. (die Schule) | der
+type: Sie spricht mit ___ Kind. (das Kind) | dem
+bank: Ich fahre mit ___ Auto. | dem ;; Sie wohnt bei ___ Mutter. | der ;; Wir sprechen mit ___ Kindern. | den
+
+[B1]
+
+@rule Придаточные: weil, dass, wenn, obwohl
+text: В придаточном предложении спрягаемый глагол стоит в самом конце.
+text: weil — потому что · dass — что · wenn — когда/если · obwohl — хотя
+example: Ich bleibe zu Hause, weil ich krank bin. — Я остаюсь дома, потому что я болен.
+example: Ich glaube, dass er recht hat. — Я думаю, что он прав.
+words: weil, dass, wenn, obwohl
+choice: Ich lerne Deutsch, ___ ich in Deutschland arbeiten möchte. | weil | obwohl | dass
+choice: Ich glaube, ___ er recht hat. | dass | weil | obwohl
+choice: ___ es regnet, bleibe ich zu Hause. | Wenn | Obwohl | Dass
+type: Ich komme nicht, ___ ich krank bin. | weil
+type: Er geht arbeiten, ___ er krank ist. | obwohl
+bank: Ich bleibe hier, ___ es regnet. | weil ;; Ich weiß, ___ du müde bist. | dass ;; ___ ich Zeit habe, rufe ich dich an. | Wenn ;; Ich gehe spazieren, ___ es kalt ist. | obwohl
+
+@rule Passiv (Präsens)
+text: werden (в нужной форме) + Partizip II в конце предложения.
+text: Важно само действие, а не тот, кто его выполняет.
+text: es wird · sie werden
+example: Das Haus wird gebaut. — Дом строится.
+example: Die Briefe werden geschrieben. — Письма пишутся.
+words: wird, werden, gebaut, gemacht, geschrieben
+choice: Das Essen ___ gekocht. | wird | werden | wirst
+choice: Die Hausaufgaben ___ gemacht. | werden | wird | werde
+choice: Der Brief wird ___. | geschrieben | schreibt | schreiben
+type: Das Auto ___ repariert. | wird
+type: Die Zimmer ___ geputzt. | werden
+bank: Das Haus ___ gebaut. | wird ;; Die Bücher ___ gelesen. | werden ;; Der Kuchen ___ gebacken. | wird
+
+@rule Konjunktiv II (желания и просьбы)
+text: Для нереальных желаний и вежливых просьб: würde + инфинитив, а также hätte, wäre, könnte.
+text: ich würde · du würdest · er würde · wir würden
+example: Ich würde gern reisen. — Я бы с удовольствием попутешествовал.
+example: Wenn ich Zeit hätte, würde ich kommen. — Если бы у меня было время, я бы пришёл.
+words: würde, hätte, wäre, könnte
+choice: Ich ___ gern nach Italien reisen. | würde | werde | wurde
+choice: Wenn ich reich ___, würde ich ein Haus kaufen. | wäre | bin | war
+choice: Wenn ich mehr Zeit ___, würde ich öfter lesen. | hätte | habe | hatte
+type: Ich ___ gern ein Eis essen. | würde
+type: Wenn ich Zeit ___, würde ich kommen. (haben) | hätte
+bank: Ich ___ gern reisen. | würde ;; Wenn ich du ___, würde ich gehen. | wäre ;; Wenn ich Geld ___, würde ich reisen. | hätte
