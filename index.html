@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<title>Немецкие слова</title>
+<title>Немецкий</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
@@ -11,13 +11,16 @@
     --paper: #ececf2;
     --line: #c8c8d2;
     --hole: #d9a566;
+    --ok: #1f8a35;
+    --bad: #c92a2a;
   }
   * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-  html, body { margin: 0; height: 100%; }
+  html { height: 100%; }
   body {
+    margin: 0;
+    min-height: 100%;
     font-family: "Comic Neue", "Comic Sans MS", "Chalkboard SE", "Segoe Print", cursive, sans-serif;
     color: var(--ink);
-    /* деревянный фон */
     background-color: #c98f50;
     background-image:
       repeating-linear-gradient(90deg, rgba(120,70,20,.10) 0 2px, transparent 2px 7px),
@@ -30,39 +33,35 @@
   #app {
     width: 100%;
     max-width: 520px;
-    padding: 18px 16px 24px;
+    padding: 16px 16px 28px;
     display: flex;
     flex-direction: column;
   }
-  .progress {
-    text-align: center;
-    font-size: 15px;
-    opacity: .6;
-    margin-bottom: 4px;
-  }
+  .progress { text-align: center; font-size: 15px; opacity: .65; margin-bottom: 4px; }
+  .rtag { text-align: center; font-size: 15px; opacity: .8; margin-bottom: 4px; font-weight: 700; }
   .word {
     text-align: center;
-    font-size: clamp(38px, 12vw, 62px);
+    font-size: clamp(36px, 11vw, 60px);
     font-weight: 700;
-    margin: 6px 0 22px;
+    margin: 6px 0 20px;
     word-break: break-word;
     line-height: 1.1;
   }
-  .grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
+  .err { text-align: center; font-size: 18px; background: rgba(255,255,255,.6); border-radius: 10px; padding: 12px; }
+
+  /* ---------- карточки-листочки ---------- */
+  .grid, .opts { display: grid; gap: 16px; }
+  .grid { grid-template-columns: 1fr 1fr; }
+  .opts.n2 { grid-template-columns: 1fr 1fr; }
+  .opts.n3 { grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
   .card {
     position: relative;
     border: 0;
-    padding: 0;
+    padding: 28px 8px 8px;
     aspect-ratio: 1 / .85;
     background-color: var(--paper);
     background-image:
-      /* дырочки сверху */
       radial-gradient(circle at 50% 50%, var(--hole) 0 4px, transparent 4.5px),
-      /* линейки тетрадного листа */
       repeating-linear-gradient(180deg, transparent 0 33px, var(--line) 33px 35px);
     background-size: 14px 14px, 100% 100%;
     background-repeat: repeat-x, no-repeat;
@@ -72,34 +71,25 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 28px 8px 8px;
     font: inherit;
     font-size: clamp(20px, 6vw, 30px);
     font-weight: 700;
     cursor: pointer;
-    transition: transform .12s ease, box-shadow .12s ease, outline-color .12s;
+    transition: transform .12s ease;
     outline: 4px solid transparent;
     outline-offset: -2px;
     word-break: break-word;
     line-height: 1.15;
   }
+  .opts.n3 .card { aspect-ratio: 1 / 1.15; font-size: clamp(16px, 4.8vw, 24px); padding: 26px 4px 6px; }
   .card:active { transform: scale(.97); }
-  .c0 { color: #55785a; }
-  .c1 { color: #d33f45; }
-  .c2 { color: #e0702a; }
-  .c3 { color: #5e78ad; }
+  .c0 { color: #55785a; } .c1 { color: #d33f45; } .c2 { color: #e0702a; } .c3 { color: #5e78ad; }
   .card.correct { outline-color: #2fb344; background-color: #dff5e3; }
-  .card.wrong   { outline-color: #e03131; background-color: #fbe0e0; animation: shake .35s; }
+  .card.wrong { outline-color: #e03131; background-color: #fbe0e0; animation: shake .35s; }
   .card:disabled { cursor: default; }
-  @keyframes shake {
-    0%,100% { transform: translateX(0); }
-    25% { transform: translateX(-6px); }
-    75% { transform: translateX(6px); }
-  }
+  @keyframes shake { 0%,100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
 
-  /* финальный экран */
-  .result { text-align: center; margin-top: 40px; }
-  .result .big { font-size: 64px; font-weight: 700; margin: 10px 0; }
+  /* ---------- кнопки ---------- */
   .btn {
     display: block; width: 100%; margin: 12px 0 0;
     padding: 16px; border: 0; border-radius: 12px;
@@ -108,106 +98,192 @@
     box-shadow: 0 5px 8px rgba(60,30,0,.35);
     cursor: pointer;
   }
+  .btn.secondary { background: #f6e3bd; }
   .btn:active { transform: scale(.98); }
+  .btn:disabled { opacity: .5; cursor: default; }
+  .actions { display: flex; gap: 10px; margin-top: 4px; }
+  .actions[hidden] { display: none; }
+  .actions .btn { margin: 0; flex: 1; font-size: clamp(15px, 4.4vw, 19px); padding: 14px 8px; }
+  .actions.col { flex-direction: column; }
+  .actions.col .btn { flex: none; font-size: 20px; padding: 16px; }
+  .result { text-align: center; margin-top: 30px; }
+  .big { font-size: 64px; font-weight: 700; margin: 6px 0 14px; text-align: center; }
+  .label { font-size: 14px; opacity: .7; text-align: center; margin: 4px 0 6px; }
+
+  /* ---------- переворачивающаяся карточка правила ---------- */
+  .flipwrap { perspective: 1200px; height: clamp(340px, 56vh, 470px); margin: 8px 0 16px; cursor: pointer; }
+  .flip { position: relative; width: 100%; height: 100%; transition: transform .6s; transform-style: preserve-3d; }
+  .flip.flipped { transform: rotateY(180deg); }
+  .face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    background-color: var(--paper);
+    background-image: radial-gradient(circle at 50% 50%, var(--hole) 0 4px, transparent 4.5px);
+    background-size: 14px 14px;
+    background-repeat: repeat-x;
+    background-position: 0 6px;
+    border-radius: 4px 4px 8px 8px;
+    box-shadow: 0 8px 14px rgba(60,30,0,.4);
+    padding: 34px 18px 16px;
+    display: flex; flex-direction: column;
+  }
+  .front { justify-content: center; align-items: center; text-align: center; }
+  .rtitle { font-size: clamp(28px, 8.5vw, 44px); font-weight: 700; color: #d33f45; line-height: 1.15; word-break: break-word; }
+  .rhint { margin-top: 22px; font-size: 15px; opacity: .55; }
+  .back { transform: rotateY(180deg); overflow-y: auto; }
+  .binner { margin: auto 0; }
+  .rlabel { font-size: 13px; text-transform: uppercase; letter-spacing: .08em; opacity: .55; margin: 8px 0 2px; }
+  .btitle { font-size: clamp(20px, 5.6vw, 26px); font-weight: 700; color: #d33f45; margin-bottom: 6px; line-height: 1.15; }
+  .btext { font-size: clamp(16px, 4.6vw, 21px); margin: 4px 0; line-height: 1.3; }
+  .bex { font-size: clamp(16px, 4.6vw, 21px); margin: 4px 0; font-weight: 700; color: #3f7a4a; line-height: 1.3; }
+
+  /* ---------- тестовые задания ---------- */
+  .sent {
+    font-size: clamp(22px, 6.4vw, 32px); font-weight: 700; text-align: center;
+    margin: 14px 0 20px; line-height: 1.5;
+    background: rgba(255,255,255,.55); border-radius: 12px; padding: 14px 10px;
+  }
+  .gap { display: inline-block; min-width: 3em; border-bottom: 3px solid var(--ink); color: transparent; text-align: center; }
+  .gap.ok { color: var(--ok); border-color: var(--ok); }
+  .ginput {
+    font: inherit; font-weight: 700; font-size: inherit; color: var(--ink);
+    width: 5.5em; text-align: center; border: 0; border-bottom: 3px solid var(--ink);
+    background: transparent; outline: none; padding: 0 4px; border-radius: 0;
+  }
+  .ginput.ok { color: var(--ok); border-color: var(--ok); }
+  .ginput.bad { color: var(--bad); border-color: var(--bad); }
+  .bankbox { background: rgba(255,255,255,.4); border-radius: 12px; padding: 10px; margin-bottom: 12px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; min-height: 44px; }
+  .chip {
+    font: inherit; font-weight: 700; font-size: 20px; padding: 8px 14px; border: 0; border-radius: 10px;
+    background: var(--paper); color: var(--ink); box-shadow: 0 3px 5px rgba(60,30,0,.3); cursor: pointer;
+  }
+  .chip.sel { outline: 3px solid #3b6fe0; }
+  .chip.static { cursor: default; background: #fff7e6; }
+  .row {
+    background: rgba(255,255,255,.55); border-radius: 10px; padding: 12px 8px; margin-bottom: 8px;
+    font-size: clamp(18px, 5vw, 24px); font-weight: 700; text-align: center; line-height: 1.6;
+  }
+  .slot { display: inline-block; min-width: 4em; border-bottom: 3px solid var(--ink); text-align: center; padding: 0 6px; cursor: pointer; }
+  .slot.ok { color: var(--ok); border-color: var(--ok); }
+  .slot.bad { color: var(--bad); border-color: var(--bad); }
+  .fb { margin-top: 10px; text-align: center; font-size: 20px; font-weight: 700; min-height: 28px; }
 </style>
 </head>
 <body>
-<div id="app"></div>
+<div id="app"><div class="word">Загрузка…</div></div>
 
 <script>
 const tg = window.Telegram && window.Telegram.WebApp;
-if (tg) { tg.ready(); tg.expand(); }
-
-const WORDS = {
-  A2: [
-    ["beginnen", "начинать"],
-    ["anrufen", "звонить"],
-    ["der Sport", "спорт"],
-    ["brauchen", "нуждаться"],
-    ["besuchen", "посещать"],
-    ["einladen", "приглашать"],
-    ["vergessen", "забывать"],
-    ["erklären", "объяснять"],
-    ["erzählen", "рассказывать"],
-    ["vorbereiten", "готовить"],
-    ["die Reise", "путешествие"],
-    ["das Geschenk", "подарок"],
-    ["die Erfahrung", "опыт"],
-    ["die Gesundheit", "здоровье"],
-    ["der Unterschied", "разница"],
-    ["die Meinung", "мнение"],
-    ["das Ergebnis", "результат"],
-    ["der Termin", "встреча"],
-    ["die Wohnung", "квартира"],
-    ["die Heizung", "отопление"],
-    ["der Nachbar", "сосед"],
-    ["der Verkehr", "движение"],
-    ["die Haltestelle", "остановка"],
-    ["der Flughafen", "аэропорт"],
-    ["das Gepäck", "багаж"],
-    ["verpassen", "пропустить"],
-    ["abholen", "забирать"],
-    ["umziehen", "переезжать"],
-    ["bestellen", "заказывать"],
-    ["bezahlen", "оплачивать"],
-    ["sich freuen", "радоваться"],
-    ["sich ärgern", "злиться"],
-    ["sich erinnern", "вспоминать"],
-    ["wichtig", "важный"],
-    ["schwierig", "сложный"],
-    ["gefährlich", "опасный"],
-    ["kostenlos", "бесплатный"],
-    ["pünktlich", "вовремя"],
-    ["manchmal", "иногда"],
-    ["plötzlich", "внезапно"],
-    ["trotzdem", "всё равно"],
-    ["außerdem", "кроме того"]
-  ]
-};
-
-const params = new URLSearchParams(location.search);
-const level = WORDS[params.get("level")] ? params.get("level") : "A2";
-const pool = WORDS[level];
-// сколько слов повторять: ?count=N (по умолчанию 10, максимум = все слова уровня)
-const requested = parseInt(params.get("count"), 10);
-const ROUNDS = Math.max(1, Math.min(isNaN(requested) ? 10 : requested, pool.length));
+if (tg) { try { tg.ready(); tg.expand(); } catch (e) {} }
 
 const app = document.getElementById("app");
-let queue, round, score, locked;
+const params = new URLSearchParams(location.search);
 
 const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-const haptic = (type) => { try { tg.HapticFeedback.notificationOccurred(type); } catch (e) {} };
+const haptic = t => { try { tg.HapticFeedback.notificationOccurred(t); } catch (e) {} };
+const el = (tag, cls, txt) => { const e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; };
+const clear = () => { app.innerHTML = ""; };
+const closeApp = () => { if (tg) tg.close(); else location.reload(); };
 
-function start() {
-  queue = shuffle(pool).slice(0, ROUNDS);
-  round = 0; score = 0;
-  next();
+// <PARSE>
+function parseWords(text) {
+  const out = {}; let cur = null;
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || line.startsWith("#")) continue;
+    const lv = line.match(/^\[(.+)\]$/);
+    if (lv) { cur = lv[1].trim().toUpperCase(); out[cur] = out[cur] || []; continue; }
+    const i = line.indexOf("=");
+    if (i > 0 && cur) out[cur].push([line.slice(0, i).trim(), line.slice(i + 1).trim()]);
+  }
+  return out;
 }
 
-function next() {
-  if (round >= queue.length) return finish();
+function parseRules(text) {
+  const out = {}; let cur = null, rule = null;
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line || line.startsWith("#")) continue;
+    const lv = line.match(/^\[(.+)\]$/);
+    if (lv) { cur = lv[1].trim().toUpperCase(); out[cur] = out[cur] || []; rule = null; continue; }
+    if (!cur) continue;
+    if (line.toLowerCase().startsWith("@rule")) {
+      rule = { title: line.slice(5).trim(), text: [], example: [], words: "", qs: [] };
+      out[cur].push(rule);
+      continue;
+    }
+    if (!rule) continue;
+    const i = line.indexOf(":");
+    if (i < 0) continue;
+    const key = line.slice(0, i).trim().toLowerCase();
+    const val = line.slice(i + 1).trim();
+    const parts = val.split("|").map(s => s.trim());
+    if (key === "text") rule.text.push(val);
+    else if (key === "example") rule.example.push(val);
+    else if (key === "words") rule.words = val;
+    else if (key === "choice" && parts.length >= 3) {
+      rule.qs.push({ type: "choice", sentence: parts[0], correct: parts[1], options: parts.slice(1) });
+    } else if (key === "type" && parts.length >= 2) {
+      const alts = parts[1].split("/").map(s => s.trim());
+      rule.qs.push({ type: "type", sentence: parts[0], shown: alts[0], answers: alts.map(s => s.toLowerCase()) });
+    } else if (key === "bank") {
+      const items = val.split(";;").map(s => { const p = s.split("|").map(x => x.trim()); return { sentence: p[0], answer: p[1] }; })
+        .filter(it => it.sentence && it.answer);
+      if (items.length >= 2) rule.qs.push({ type: "bank", items });
+    }
+  }
+  return out;
+}
+// </PARSE>
+
+async function loadText(name) {
+  const r = await fetch(name + "?v=" + Date.now());
+  if (!r.ok) throw new Error(name + " (" + r.status + ")");
+  return r.text();
+}
+
+function showError(msg) {
+  clear();
+  app.append(el("div", "word", "Ой 😕"), el("div", "err", msg));
+  const b = el("button", "btn", "Закрыть"); b.onclick = closeApp; app.append(b);
+}
+
+let WORDS = {}, RULES = {};
+let curLevel = "A2";
+
+/* =====================  СЛОВА  ===================== */
+let pool, queue, round, score, locked, wordsCount;
+
+function startWords(lvl, count) {
+  curLevel = lvl;
+  pool = WORDS[lvl];
+  if (!pool || pool.length < 4) { showError("Для уровня " + lvl + " пока недостаточно слов (нужно минимум 4 в words.txt)."); return; }
+  const req = parseInt(count, 10);
+  wordsCount = Math.max(1, Math.min(isNaN(req) ? 10 : req, pool.length));
+  queue = shuffle(pool).slice(0, wordsCount);
+  round = 0; score = 0;
+  nextWord();
+}
+
+function nextWord() {
+  if (round >= queue.length) return finishWords();
   locked = false;
   const [de, ru] = queue[round];
-  const wrong = shuffle(pool.filter(w => w[0] !== de)).slice(0, 3).map(w => w[1]);
-  const options = shuffle([ru, ...wrong]);
-
-  app.innerHTML = `
-    <div class="progress">${level} · ${round + 1} / ${queue.length}</div>
-    <div class="word"></div>
-    <div class="grid"></div>`;
-  app.querySelector(".word").textContent = de;
-  const grid = app.querySelector(".grid");
-
+  const translations = [...new Set(pool.map(w => w[1]))].filter(t => t !== ru);
+  const options = shuffle([ru, ...shuffle(translations).slice(0, 3)]);
+  clear();
+  app.append(el("div", "progress", curLevel + " · " + (round + 1) + " / " + queue.length), el("div", "word", de));
+  const grid = el("div", "grid");
   options.forEach((opt, i) => {
-    const b = document.createElement("button");
-    b.className = "card c" + i;
-    b.textContent = opt;
-    b.onclick = () => pick(b, opt === ru, grid, ru);
-    grid.appendChild(b);
+    const b = el("button", "card c" + i, opt);
+    b.onclick = () => pickWord(b, opt === ru, grid, ru);
+    grid.append(b);
   });
+  app.append(grid);
 }
 
-function pick(btn, ok, grid, ru) {
+function pickWord(btn, ok, grid, ru) {
   if (locked) return;
   locked = true;
   if (ok) { score++; btn.classList.add("correct"); haptic("success"); }
@@ -216,22 +292,284 @@ function pick(btn, ok, grid, ru) {
     [...grid.children].forEach(c => { if (c.textContent === ru) c.classList.add("correct"); });
   }
   [...grid.children].forEach(c => c.disabled = true);
-  setTimeout(() => { round++; next(); }, ok ? 650 : 1300);
+  setTimeout(() => { round++; nextWord(); }, ok ? 650 : 1300);
 }
 
-function finish() {
-  app.innerHTML = `
-    <div class="result">
-      <div class="word">Готово!</div>
-      <div class="big">${score} / ${queue.length}</div>
-      <button class="btn" id="again">🔁 Ещё раз</button>
-      <button class="btn" id="close">Закрыть</button>
-    </div>`;
-  document.getElementById("again").onclick = start;
-  document.getElementById("close").onclick = () => tg ? tg.close() : location.reload();
+function finishWords() {
+  clear();
+  const box = el("div", "result");
+  box.append(el("div", "word", "Готово!"), el("div", "big", score + " / " + queue.length));
+  const again = el("button", "btn", "🔁 Ещё раз"); again.onclick = () => startWords(curLevel, wordsCount);
+  const close = el("button", "btn", "Закрыть"); close.onclick = closeApp;
+  box.append(again, close);
+  app.append(box);
 }
 
-start();
+/* =====================  ПРАВИЛА  ===================== */
+let ri = 0;
+
+function startRules(lvl) {
+  curLevel = lvl;
+  if (!RULES[lvl] || !RULES[lvl].length) { showError("Для уровня " + lvl + " пока нет правил (rules.txt)."); return; }
+  showRule(0, false);
+}
+
+function showRule(i, flipped) {
+  ri = i;
+  const rules = RULES[curLevel];
+  const r = rules[i];
+  clear();
+  app.append(el("div", "progress", "Правила " + curLevel + " · " + (i + 1) + " / " + rules.length));
+
+  const wrap = el("div", "flipwrap");
+  const flip = el("div", "flip" + (flipped ? " flipped" : ""));
+  const front = el("div", "face front");
+  front.append(el("div", "rtitle", r.title), el("div", "rhint", "нажми, чтобы перевернуть"));
+  const back = el("div", "face back");
+  const inner = el("div", "binner");
+  inner.append(el("div", "rlabel", "Правило"), el("div", "btitle", r.title));
+  r.text.forEach(t => inner.append(el("p", "btext", t)));
+  if (r.example.length) {
+    inner.append(el("div", "rlabel", "Пример"));
+    r.example.forEach(t => inner.append(el("p", "bex", t)));
+  }
+  back.append(inner);
+  flip.append(front, back);
+  wrap.append(flip);
+  app.append(wrap);
+
+  const actions = el("div", "actions");
+  actions.hidden = !flipped;
+  const last = i >= rules.length - 1;
+  const tb = el("button", "btn secondary", "✏️ Тестовое задание");
+  tb.onclick = () => startTest(i);
+  if (!r.qs.length) tb.style.display = "none";
+  const nb = el("button", "btn", last ? "Завершить" : "Следующее правило ➜");
+  nb.onclick = () => last ? finishRules() : showRule(i + 1, false);
+  actions.append(tb, nb);
+  app.append(actions);
+
+  wrap.onclick = () => { flip.classList.toggle("flipped"); actions.hidden = false; };
+}
+
+function finishRules() {
+  clear();
+  const box = el("div", "result");
+  box.append(el("div", "word", "Все правила пройдены 🎉"));
+  const again = el("button", "btn", "🔁 Сначала"); again.onclick = () => showRule(0, false);
+  const close = el("button", "btn", "Закрыть"); close.onclick = closeApp;
+  box.append(again, close);
+  app.append(box);
+}
+
+/* =====================  ТЕСТ ПО ПРАВИЛУ  ===================== */
+let T = null;
+
+function startTest(i) {
+  const rule = RULES[curLevel][i];
+  T = {
+    ri: i, rule, qi: 0, score: 0,
+    max: rule.qs.reduce((s, q) => s + (q.type === "bank" ? q.items.length : 1), 0)
+  };
+  renderQ();
+}
+
+function nextQ() { T.qi++; renderQ(); }
+
+function renderQ() {
+  if (T.qi >= T.rule.qs.length) return finishTest();
+  const q = T.rule.qs[T.qi];
+  clear();
+  app.append(el("div", "progress", "Тест · " + (T.qi + 1) + " / " + T.rule.qs.length), el("div", "rtag", T.rule.title));
+  if (q.type === "choice") renderChoice(q);
+  else if (q.type === "type") renderType(q);
+  else renderBank(q);
+}
+
+function sentenceEl(sentence, gapEl) {
+  const box = el("div", "sent");
+  const parts = sentence.split("___");
+  box.append(document.createTextNode(parts[0]), gapEl, document.createTextNode(parts.slice(1).join("___")));
+  return box;
+}
+
+function wordsBar(words) {
+  const wrap = el("div", "bankbox");
+  wrap.append(el("div", "label", "Слова для задания:"));
+  const c = el("div", "chips");
+  words.split(",").map(s => s.trim()).filter(Boolean).forEach(w => c.append(el("span", "chip static", w)));
+  wrap.append(c);
+  return wrap;
+}
+
+/* --- выбор из 2-3 карточек --- */
+function renderChoice(q) {
+  const gap = el("span", "gap", "\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0");
+  app.append(sentenceEl(q.sentence, gap));
+  const opts = shuffle(q.options);
+  const grid = el("div", "opts n" + Math.min(3, opts.length));
+  let done = false;
+  opts.forEach((o, i) => {
+    const b = el("button", "card c" + i, o);
+    b.onclick = () => {
+      if (done) return; done = true;
+      const ok = o === q.correct;
+      if (ok) { T.score++; b.classList.add("correct"); haptic("success"); }
+      else {
+        b.classList.add("wrong"); haptic("error");
+        [...grid.children].forEach(c => { if (c.textContent === q.correct) c.classList.add("correct"); });
+      }
+      gap.textContent = q.correct; gap.classList.add("ok");
+      [...grid.children].forEach(c => c.disabled = true);
+      setTimeout(nextQ, ok ? 900 : 1700);
+    };
+    grid.append(b);
+  });
+  app.append(grid);
+}
+
+/* --- вписать самому (слова показаны сверху) --- */
+function renderType(q) {
+  if (T.rule.words) app.append(wordsBar(T.rule.words));
+  const input = el("input", "ginput");
+  input.type = "text";
+  input.setAttribute("autocapitalize", "off");
+  input.setAttribute("autocomplete", "off");
+  input.setAttribute("autocorrect", "off");
+  input.setAttribute("spellcheck", "false");
+  app.append(sentenceEl(q.sentence, input));
+  const fb = el("div", "fb");
+  const btn = el("button", "btn", "Проверить");
+  app.append(fb, btn);
+  let checked = false;
+  const check = () => {
+    if (checked) { nextQ(); return; }
+    const v = input.value.trim().toLowerCase();
+    if (!v) { input.focus(); return; }
+    checked = true;
+    if (q.answers.includes(v)) {
+      T.score++; input.classList.add("ok"); fb.textContent = "✅ Верно!"; fb.style.color = "var(--ok)"; haptic("success");
+    } else {
+      input.classList.add("bad"); fb.textContent = "❌ Правильно: " + q.shown; fb.style.color = "var(--bad)"; haptic("error");
+    }
+    input.disabled = true;
+    btn.textContent = "Дальше ➜";
+  };
+  btn.onclick = check;
+  input.addEventListener("keydown", e => { if (e.key === "Enter") check(); });
+  setTimeout(() => input.focus(), 60);
+}
+
+/* --- перенести слова из банка в пропуски --- */
+function renderBank(q) {
+  const items = q.items;
+  const chips = shuffle(items.map((it, i) => ({ id: i, w: it.answer })));
+  let sel = null, checked = false;
+  const placed = {};
+
+  const bankBox = el("div", "bankbox");
+  const chipsEl = el("div", "chips");
+  bankBox.append(el("div", "label", "Нажми на слово, затем на пропуск"), chipsEl);
+  const rows = el("div");
+  const fb = el("div", "fb");
+  const btn = el("button", "btn", "Проверить");
+  app.append(bankBox, rows, fb, btn);
+
+  function draw() {
+    chipsEl.innerHTML = "";
+    const used = new Set(Object.values(placed).map(c => c.id));
+    chips.filter(c => !used.has(c.id)).forEach(c => {
+      const b = el("button", "chip" + (sel && sel.id === c.id ? " sel" : ""), c.w);
+      b.disabled = checked;
+      b.onclick = () => { sel = (sel && sel.id === c.id) ? null : c; draw(); };
+      chipsEl.append(b);
+    });
+    rows.innerHTML = "";
+    items.forEach((it, i) => {
+      const row = el("div", "row");
+      const p = placed[i];
+      const slot = el("span", "slot", p ? p.w : "\u00A0");
+      if (checked) {
+        const good = p.w.toLowerCase() === it.answer.toLowerCase();
+        slot.classList.add(good ? "ok" : "bad");
+        if (!good) slot.textContent = p.w + " → " + it.answer;
+      }
+      slot.onclick = () => {
+        if (checked) return;
+        if (sel) { placed[i] = sel; sel = null; }
+        else if (placed[i]) { delete placed[i]; }
+        draw();
+      };
+      const parts = it.sentence.split("___");
+      row.append(document.createTextNode(parts[0]), slot, document.createTextNode(parts.slice(1).join("___")));
+      rows.append(row);
+    });
+    btn.disabled = !checked && Object.keys(placed).length < items.length;
+  }
+
+  btn.onclick = () => {
+    if (checked) { nextQ(); return; }
+    checked = true;
+    let good = 0;
+    items.forEach((it, i) => { if (placed[i].w.toLowerCase() === it.answer.toLowerCase()) good++; });
+    T.score += good;
+    const all = good === items.length;
+    fb.textContent = all ? "✅ Всё верно!" : "Верно: " + good + " из " + items.length;
+    fb.style.color = all ? "var(--ok)" : "var(--bad)";
+    haptic(all ? "success" : "error");
+    btn.textContent = "Дальше ➜";
+    draw();
+    btn.disabled = false;
+  };
+  draw();
+}
+
+function finishTest() {
+  clear();
+  const rules = RULES[curLevel];
+  const last = T.ri >= rules.length - 1;
+  const box = el("div", "result");
+  box.append(el("div", "rtag", T.rule.title), el("div", "word", "Тест пройден"), el("div", "big", T.score + " / " + T.max));
+  const acts = el("div", "actions col");
+  const again = el("button", "btn secondary", "🔁 Повторить тест"); again.onclick = () => startTest(T.ri);
+  const back = el("button", "btn secondary", "↩ К правилу"); back.onclick = () => showRule(T.ri, true);
+  const next = el("button", "btn", last ? "Завершить" : "Следующее правило ➜");
+  next.onclick = () => last ? finishRules() : showRule(T.ri + 1, false);
+  acts.append(again, back, next);
+  box.append(acts);
+  app.append(box);
+}
+
+/* =====================  МЕНЮ (если открыть без параметров)  ===================== */
+function renderMenu() {
+  clear();
+  app.append(el("div", "word", "Немецкий"));
+  const acts = el("div", "actions col");
+  Object.keys(WORDS).forEach(l => { const b = el("button", "btn", "Слова " + l); b.onclick = () => startWords(l, 10); acts.append(b); });
+  Object.keys(RULES).forEach(l => { const b = el("button", "btn secondary", "Правила " + l); b.onclick = () => startRules(l); acts.append(b); });
+  app.append(acts);
+}
+
+/* =====================  СТАРТ  ===================== */
+(async function () {
+  const mode = params.get("mode") || (params.get("level") ? "words" : "menu");
+  const level = (params.get("level") || "").toUpperCase();
+  try {
+    if (mode === "rules") {
+      RULES = parseRules(await loadText("rules.txt"));
+      if (level) startRules(level); else renderMenu();
+    } else if (mode === "words") {
+      WORDS = parseWords(await loadText("words.txt"));
+      startWords(level || "A2", params.get("count"));
+    } else {
+      const [w, r] = await Promise.all([loadText("words.txt"), loadText("rules.txt")]);
+      WORDS = parseWords(w); RULES = parseRules(r);
+      renderMenu();
+    }
+  } catch (e) {
+    showError("Не удалось загрузить файл: " + e.message + ". Проверь, что words.txt и rules.txt лежат рядом с index.html.");
+  }
+})();
 </script>
 </body>
 </html>
