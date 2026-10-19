@@ -273,8 +273,16 @@ function nextWord() {
   if (round >= queue.length) return finishWords();
   locked = false;
   const [de, ru] = queue[round];
-  const translations = [...new Set(pool.map(w => w[1]))].filter(t => t !== ru);
-  const options = shuffle([ru, ...shuffle(translations).slice(0, 3)]);
+  // Слова на «en» получают неверные варианты только из других слов на «en».
+  // Если таких слов не хватает (меньше 3), недостающие берутся из остальных слов уровня.
+  const endsEn = w => /en$/i.test(w.trim());
+  const uniqTr = list => [...new Set(list.map(w => w[1]))].filter(t => t !== ru);
+  const source = endsEn(de) ? pool.filter(w => endsEn(w[0])) : pool;
+  let wrong = shuffle(uniqTr(source)).slice(0, 3);
+  if (wrong.length < 3) {
+    wrong = wrong.concat(shuffle(uniqTr(pool).filter(t => !wrong.includes(t)))).slice(0, 3);
+  }
+  const options = shuffle([ru, ...wrong]);
   clear();
   app.append(el("div", "progress", curLevel + " · " + (round + 1) + " / " + queue.length), el("div", "word", de));
   const grid = el("div", "grid");
